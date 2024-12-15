@@ -1,0 +1,14 @@
+num_frames: 1069
+rgb_shape:
+- 1069
+- 480
+- 848
+- 3
+depth_shape:
+- 1069
+- 480
+- 848
+ee_poses_shape:
+- 1069
+- 4
+- 4
