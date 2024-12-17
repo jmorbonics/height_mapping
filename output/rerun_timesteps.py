@@ -38,7 +38,7 @@ pose_matrix = np.reshape(ee_poses[0], (4, 4))
 
 print(map_data.shape)
 for k in range(0, map_data.shape[0]):
-    time = k * 0.03333333333333333 * 20
+    time = k * 1.6666666666
     rr.set_time_seconds("stable_time", time)
 
     depth_image = map_data[k]
@@ -47,6 +47,8 @@ for k in range(0, map_data.shape[0]):
     # Create a 3D point cloud from the depth image
 
     x, y = np.meshgrid(np.arange(-0.1, 1.9, 0.01), np.arange(-1, 1, 0.01))
+    x = x[::-1]
+    y = y[::-1]
     z = depth_image
     points = np.stack((x, y, z), axis=-1).reshape(-1, 3)
 

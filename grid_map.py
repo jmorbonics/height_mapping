@@ -258,6 +258,7 @@ class Gridmap:
 
         index = self.get_index(position)
         if self.layers[occupancy_layer][index[0]][index[1]] > 0:
+            # average of old estimate and new point
             self.layers[layer][index[0]][index[1]] = 0.5 * (value + self.layers[layer][index[0]][index[1]])
         else:
             self.layers[layer][index[0]][index[1]] = value
@@ -281,18 +282,18 @@ class Gridmap:
         self.layers[layer][index[0]][index[1]] += 1
 
 
-    def multi_update(self, layer: str, occupancy_layer: str, positions: np.ndarray, values: np.ndarray):
-        """
-        layer: name of layer
-        positions: list of (x, y) positions
-        values: list of values
-        Updates the value of the layer at the positions
-        """
-        indexes = self.get_indexes(positions)
-        if self.layers[occupancy_layer][index[0]][index[1]] > 0:
-            self.layers[layer][index[0]][index[1]] = 0.5 * (value + self.layers[layer][index[0]][index[1]])
-        else:
-            self.layers[layer][index[0]][index[1]] = value
+    # def multi_update(self, layer: str, occupancy_layer: str, positions: np.ndarray, values: np.ndarray):
+    #     """
+    #     layer: name of layer
+    #     positions: list of (x, y) positions
+    #     values: list of values
+    #     Updates the value of the layer at the positions
+    #     """
+    #     indexes = self.get_indexes(positions)
+    #     if self.layers[occupancy_layer][index[0]][index[1]] > 0:
+    #         self.layers[layer][index[0]][index[1]] = 0.5 * (value + self.layers[layer][index[0]][index[1]])
+    #     else:
+    #         self.layers[layer][index[0]][index[1]] = value
 
 
     def visualize_layer(self, layer: str):

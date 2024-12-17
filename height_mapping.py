@@ -58,6 +58,12 @@ if __name__ == "__main__":
     R_camera_to_ee = np.array(extrinsics['R_camera_to_ee'])
     t_camera_to_ee = np.array(extrinsics['t_camera_to_ee'])
 
+    print("R_camera_to_ee: ", R_camera_to_ee)
+    print(R_camera_to_ee.shape)
+
+    print("t_camera_to_ee: ", t_camera_to_ee)
+    print(t_camera_to_ee.shape)
+
     min_x = np.min(points_base[:, 0])
     max_x = np.max(points_base[:, 0])
     min_y = np.min(points_base[:, 1])
@@ -71,7 +77,7 @@ if __name__ == "__main__":
     print("max_y: ", max_y)
 
     x_length = abs(1.5 * (max_x - min_x))
-    y_length = abs(1.5 * (max_y - min_y))      # give arbitrary > 1x buffer
+    y_length = abs(1.5 * (max_y - min_y))      # give arbitrary > 1x buffer for bounds of heightmap
     length = Length(x_length, y_length)
 
     position = Position((max_x + min_x) / 2, (max_y + min_y) / 2)  # center of the points
@@ -89,13 +95,13 @@ if __name__ == "__main__":
         points, colors = generate_point_cloud(rgb[i], depth[i], intrinsics)
 
         # Transform points from camera to end-effector frame
-        points_ee = (R_camera_to_ee @ points.T + t_camera_to_ee.reshape(3, 1)).T
+        points_ee = R_camera_to_ee @ points.T + t_camera_to_ee.reshape(3, 1)
         
         # Transform points in first saved sample in data from end-effector to base frame using first pose
         ee_pose = ee_poses[i]
         R_ee_to_base = ee_pose[:3, :3]
-        t_ee_to_base = ee_pose[:3, 3]
-        points_base = (R_ee_to_base @ points_ee.T + t_ee_to_base.reshape(3, 1)).T
+        t_ee_to_base = ee_pose[:3, 3].reshape(3,1)
+        points_base = (R_ee_to_base @ points_ee + t_ee_to_base).T
 
         
         heightmap.fuse(points_base)
