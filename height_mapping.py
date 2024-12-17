@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import copy
 from datetime import datetime
-
 from scipy.stats import norm
 from load_exported_data import load_dataset, generate_point_cloud
 from typing import Optional, List, Dict, Tuple, Any
@@ -80,12 +80,12 @@ if __name__ == "__main__":
     heightmap = Heightmap(Length(2,2), 0.01, Position(-0.9,0))
     heightmap.initial_fuse(points_base)
 
-    # display
-    # heightmap.gridmap.visualize_layer("elevation")
+    # saving layers for rerun visualization
+    rerun_layers = [heightmap.gridmap.get_layer("elevation")]
 
 
     # Fuse in later frames
-    for i in range(1, 10):
+    for i in range(1, 1000, 50):
         points, colors = generate_point_cloud(rgb[i], depth[i], intrinsics)
 
         # Transform points from camera to end-effector frame
@@ -97,10 +97,16 @@ if __name__ == "__main__":
         t_ee_to_base = ee_pose[:3, 3]
         points_base = (R_ee_to_base @ points_ee.T + t_ee_to_base.reshape(3, 1)).T
 
+        
         heightmap.fuse(points_base)
 
-    heightmap.gridmap.visualize_layer("elevation")
-    
 
+        rerun_layers.append(copy.deepcopy(heightmap.gridmap.get_layer("elevation")))
+        
+
+    # use output/rerun_timesteps.py to visualize
+    np.save("output/elevation_timesteps.npy", rerun_layers)
+
+    heightmap.gridmap.visualize_layer("elevation")
     print("Done")
 

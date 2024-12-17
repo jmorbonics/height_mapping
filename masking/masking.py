@@ -3,7 +3,7 @@ import argparse
 import cv2
 from typing import Dict, Any
 import sys
-sys.path.append("..")
+sys.path.append(".")
 from load_exported_data import load_dataset
 
 """

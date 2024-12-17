@@ -232,6 +232,15 @@ class Gridmap:
         else:
             raise ValueError("Layer not found")
         
+    
+    def get_layer(self, layer: str) -> np.ndarray:
+        """
+        layer: name of layer
+        Returns the layer
+        """
+        return self.layers[layer]
+    
+        
     def update_at_position(self, layer: str, occupancy_layer: str, position: Position, value: float):
         """
         layer: name of layer
