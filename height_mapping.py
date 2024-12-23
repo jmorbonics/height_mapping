@@ -23,7 +23,7 @@ class Heightmap:
         self.gridmap.add_layer("occupancy", 0)
 
     def initial_fuse(self, points):
-        points = [point for point in points if point[0]**2 + point[1]**2 + point[2]**2 < 2**2]   # 3.25
+        points = [point for point in points if point[0]**2 + point[1]**2 + point[2]**2 < 1.5**2]   # 3.25
         points = np.array(points)
 
         min_y = np.min(points[:, 1])
@@ -32,7 +32,7 @@ class Heightmap:
 
     def fuse(self, points):
         # Filter points
-        points = [point for point in points if point[0]**2 + point[1]**2 + point[2]**2 < 2**2]   # 3.25
+        points = [point for point in points if point[0]**2 + point[1]**2 + point[2]**2 < 1.5**2]   # 3.25
         points = np.array(points)
 
         for point in points:
@@ -58,11 +58,11 @@ if __name__ == "__main__":
     R_camera_to_ee = np.array(extrinsics['R_camera_to_ee'])
     t_camera_to_ee = np.array(extrinsics['t_camera_to_ee'])
 
-    print("R_camera_to_ee: ", R_camera_to_ee)
-    print(R_camera_to_ee.shape)
+    # print("R_camera_to_ee: ", R_camera_to_ee)
+    # print(R_camera_to_ee.shape)
 
-    print("t_camera_to_ee: ", t_camera_to_ee)
-    print(t_camera_to_ee.shape)
+    # print("t_camera_to_ee: ", t_camera_to_ee)
+    # print(t_camera_to_ee.shape)
 
     min_x = np.min(points_base[:, 0])
     max_x = np.max(points_base[:, 0])
@@ -90,18 +90,21 @@ if __name__ == "__main__":
     rerun_layers = [heightmap.gridmap.get_layer("elevation")]
 
 
-    # Fuse in later frames
-    for i in range(1, 1000, 50):
+    # Fuse in later frames (every 30th frame)
+    for i in range(1, len(ee_poses), 30):
         points, colors = generate_point_cloud(rgb[i], depth[i], intrinsics)
 
         # Transform points from camera to end-effector frame
-        points_ee = R_camera_to_ee @ points.T + t_camera_to_ee.reshape(3, 1)
+        points_ee = R_camera_to_ee.T @ points.T + t_camera_to_ee
         
-        # Transform points in first saved sample in data from end-effector to base frame using first pose
+        # Transform points in data from end-effector to base frame using corresponding pose
         ee_pose = ee_poses[i]
         R_ee_to_base = ee_pose[:3, :3]
-        t_ee_to_base = ee_pose[:3, 3].reshape(3,1)
-        points_base = (R_ee_to_base @ points_ee + t_ee_to_base).T
+        print("R_ee_to_base: ", R_ee_to_base)
+        R_ee_to_base = R_ee_to_base.T
+        print("R_ee_to_base_fixed: ", R_ee_to_base)
+        t_ee_to_base = ee_pose[:3, 3]
+        points_base = (R_ee_to_base @ points_ee + t_ee_to_base.reshape(3,1)).T
 
         
         heightmap.fuse(points_base)

@@ -257,11 +257,11 @@ class Gridmap:
         
 
         index = self.get_index(position)
-        if self.layers[occupancy_layer][index[0]][index[1]] > 0:
-            # average of old estimate and new point
-            self.layers[layer][index[0]][index[1]] = 0.5 * (value + self.layers[layer][index[0]][index[1]])
-        else:
-            self.layers[layer][index[0]][index[1]] = value
+        # if self.layers[occupancy_layer][index[0]][index[1]] > 0:
+        #     # average of old estimate and new point
+        #     self.layers[layer][index[0]][index[1]] = 0.5 * (value + self.layers[layer][index[0]][index[1]])
+        # else:
+        self.layers[layer][index[0]][index[1]] = value
 
         # TODO: add more sophisticated update function -> options to pick how to update
         # 1. average, 2. max, 3. min, 4. sum, 5. weighted sum, 6. kalman, etc.
